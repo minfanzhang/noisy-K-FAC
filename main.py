@@ -84,7 +84,7 @@ def gradient_check():
         print("processing batch size {}".format(bs))
 
         # load data
-        train_loader, test_loader = load_pytorch(config, batch_size=bs)
+        train_loader, test_loader = load_pytorch(config)
 
         # define computational graph
         sess = tf.Session()
@@ -103,7 +103,7 @@ def gradient_check():
         print("processing batch size {}".format(bs))
 
         # load data
-        train_loader, test_loader = load_pytorch(config, batch_size=bs)
+        train_loader, test_loader = load_pytorch(config)
 
         # define computational graph
         sess = tf.Session()

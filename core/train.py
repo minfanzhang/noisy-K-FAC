@@ -86,8 +86,9 @@ class Trainer(BaseTrain):
     def grad_check(self, sess, batch_size, precon):
         self.model.load(sess)
 
-        (x, y) = next(iter(self.train_loader))
-        assert len(y) == batch_size
+        import torch
+        x, y = torch.load("cifar10_x")[:batch_size], \
+            torch.load("cifar10_y")[:batch_size]
 
         num_samples = 150
         num_trials = 1

@@ -112,4 +112,5 @@ run
 
 #
 experiments/
-
+cifar10_x
+cifar10_y
