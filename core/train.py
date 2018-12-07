@@ -2,6 +2,9 @@ from core.base_train import BaseTrain
 import tensorflow as tf
 from tqdm import tqdm
 import numpy as np
+import pickle
+import torch
+import os
 
 
 class Trainer(BaseTrain):
@@ -86,7 +89,6 @@ class Trainer(BaseTrain):
     def grad_check(self, sess, batch_size, precon):
         self.model.load(sess)
 
-        import torch
         x, y = torch.load("cifar10_x")[:batch_size], \
             torch.load("cifar10_y")[:batch_size]
 
@@ -149,11 +151,11 @@ class Trainer(BaseTrain):
               With flip: ",str(self.config.use_flip),", \
               W_FC gradients has variance: \n",W_FC_grad_var)
 
-        grad_save_path = '{}/grad_check/batch{}_pre{}'.format(
-            experiments, batch_size, precon)
+        grad_save_path = 'experiments/grad_check/81train_acc_pre{}'.format(precon)
         if not os.path.exists(grad_save_path):
             os.makedirs(grad_save_path)
-        with open('{}/81train_acc.pkl'.format(grad_save_path), 'wb') as f1:
-            pickle.dump([W4_grad_var, W9_grad_var, W13_grad_var, W_FC_grad_var])
-            print('=================save_model_batch_size_{}====" + \
-                  "=================='.format(batch_size))
+        with open('{}/{}.pkl'.format(grad_save_path, batch_size), 'wb') as f1:
+            pickle.dump(
+                [W4_grad_var, W9_grad_var, W13_grad_var, W_FC_grad_var], f1)
+            print("=================save_model_batch_size_" + \
+                  "{}=================".format(batch_size))
