@@ -76,7 +76,7 @@ def gradient_check():
 
     logger.info(config)
 
-    batch_sizes = [1,4,16,64,128,256]
+    batch_sizes = [1,4,16,64,128,256,512]
 
     precon = False
     for bs in batch_sizes:

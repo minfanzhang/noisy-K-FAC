@@ -149,15 +149,11 @@ class Trainer(BaseTrain):
               With flip: ",str(self.config.use_flip),", \
               W_FC gradients has variance: \n",W_FC_grad_var)
 
-        #grad_save_path = '{}/batch{}'.format(GRAD_CHECK_ROOT_DIR, self.config.batch_size)
-        #if not os.path.exists(grad_save_path):
-        #    os.makedirs(grad_save_path)
-
-        #if self.config.use_flip :
-        #    with open('{}/ptb_var_62_train_acc_conv_flip.pkl'.format(grad_save_path), 'wb') as f2:
-        #        pickle.dump([W1_grad_var, W2_grad_var, W3_grad_var, W4_grad_var, W5_grad_var, W6_grad_var, W7_grad_var, W8_grad_var, W9_grad_var, W10_grad_var, W11_grad_var, W12_grad_var, W13_grad_var, W_FC_grad_var], f2)
-        #        print('======================save_flip_model_batch_size_{}========================='.format(self.config.batch_size))
-        #else :
-        #    with open('{}/ptb_var_62_train_acc_conv_pert.pkl'.format(grad_save_path), 'wb') as f1:
-        #        pickle.dump([W1_grad_var, W2_grad_var, W3_grad_var, W4_grad_var, W5_grad_var, W6_grad_var, W7_grad_var, W8_grad_var, W9_grad_var, W10_grad_var, W11_grad_var, W12_grad_var, W13_grad_var, W_FC_grad_var], f1)
-        #        print('======================save_pert_model_batch_size_{}========================='.format(self.config.batch_size))
+        grad_save_path = '{}/grad_check/batch{}_pre{}'.format(
+            experiments, batch_size, precon)
+        if not os.path.exists(grad_save_path):
+            os.makedirs(grad_save_path)
+        with open('{}/81train_acc.pkl'.format(grad_save_path), 'wb') as f1:
+            pickle.dump([W4_grad_var, W9_grad_var, W13_grad_var, W_FC_grad_var])
+            print('=================save_model_batch_size_{}====" + \
+                  "=================='.format(batch_size))
