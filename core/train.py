@@ -1,4 +1,5 @@
 from core.base_train import BaseTrain
+import tensorflow as tf
 from tqdm import tqdm
 import numpy as np
 
@@ -53,7 +54,7 @@ class Trainer(BaseTrain):
         cur_iter = self.model.global_step_tensor.eval(self.sess)
         self.summarizer.summarize(cur_iter, summaries_dict=summaries_dict)
 
-        # self.model.save(self.sess)
+        self.model.save(self.sess)
 
     def test_epoch(self):
         loss_list = []
@@ -81,3 +82,81 @@ class Trainer(BaseTrain):
         # summarize
         cur_iter = self.model.global_step_tensor.eval(self.sess)
         self.summarizer.summarize(cur_iter, summaries_dict=summaries_dict)
+
+    def grad_check(self, sess, batch_size, precon):
+        self.model.load(sess)
+
+        (x, y) = next(iter(self.train_loader))
+        assert len(y) == batch_size
+
+        num_samples = 150
+        num_trials = 1
+
+        opt = self.model.optim
+
+        trainable_vars = tf.trainable_variables()
+        if precon:
+            gradient_step = opt.compute_precon_gradients(
+                self.model.total_loss, opt.variables)
+        else:
+            gradient_step = opt.compute_gradients(
+                self.model.total_loss, opt.variables)
+
+        feed_dict = {self.model.is_training: False,
+                     self.model.inputs: x, self.model.targets: y,
+                     self.model.n_particles: self.config.train_particles}
+
+        W4_shape = [3, 3, 64, 64]
+        W9_shape = [3, 3, 256, 256]
+        W13_shape = [3, 3, 256, 256]
+        W_FC_shape = [256, 10]
+
+        W4_grad_var = np.zeros([num_trials])
+        W9_grad_var = np.zeros([num_trials])
+        W13_grad_var = np.zeros([num_trials])
+        W_FC_grad_var = np.zeros([num_trials])
+
+        for i in range(num_trials) :
+            #print('Iter {}/{}'.format(i, num_trials))
+            W4_grad_lst = np.zeros([num_samples,W4_shape[0],W4_shape[1],W4_shape[2],W4_shape[3]])
+            W9_grad_lst = np.zeros([num_samples,W9_shape[0],W9_shape[1],W9_shape[2],W9_shape[3]])
+            W13_grad_lst = np.zeros([num_samples,W13_shape[0],W13_shape[1],W13_shape[2],W13_shape[3]])
+            W_FC_grad_lst = np.zeros([num_samples,W_FC_shape[0],W_FC_shape[1]])
+
+            for j in range(num_samples) :
+                grad_W = sess.run(gradient_step, feed_dict=feed_dict)
+                W4_grad_lst[j,:,:,:,:] = grad_W[6][0]
+                W9_grad_lst[j,:,:,:,:] = grad_W[16][0]
+                W13_grad_lst[j,:,:,:,:] = grad_W[24][0]
+                W_FC_grad_lst[j,:,:] = grad_W[26][0]
+
+            W4_grad_var[i] = np.mean(np.var(W4_grad_lst, axis=0))
+            W9_grad_var[i] = np.mean(np.var(W9_grad_lst, axis=0))
+            W13_grad_var[i] = np.mean(np.var(W13_grad_lst, axis=0))
+            W_FC_grad_var[i] = np.mean(np.var(W_FC_grad_lst, axis=0))
+
+        print("Batch size: ",str(batch_size),\
+              " With flip: ",str(self.config.use_flip),", \
+              W4 gradients has variance: \n",W4_grad_var)
+        print("Batch size: ",str(batch_size)," \
+              With flip: ",str(self.config.use_flip),", \
+              W9 gradients has variance: \n",W9_grad_var)
+        print("Batch size: ",str(batch_size)," \
+              With flip: ",str(self.config.use_flip),", \
+              W13 gradients has variance: \n",W13_grad_var)
+        print("Batch size: ",str(batch_size)," \
+              With flip: ",str(self.config.use_flip),", \
+              W_FC gradients has variance: \n",W_FC_grad_var)
+
+        #grad_save_path = '{}/batch{}'.format(GRAD_CHECK_ROOT_DIR, self.config.batch_size)
+        #if not os.path.exists(grad_save_path):
+        #    os.makedirs(grad_save_path)
+
+        #if self.config.use_flip :
+        #    with open('{}/ptb_var_62_train_acc_conv_flip.pkl'.format(grad_save_path), 'wb') as f2:
+        #        pickle.dump([W1_grad_var, W2_grad_var, W3_grad_var, W4_grad_var, W5_grad_var, W6_grad_var, W7_grad_var, W8_grad_var, W9_grad_var, W10_grad_var, W11_grad_var, W12_grad_var, W13_grad_var, W_FC_grad_var], f2)
+        #        print('======================save_flip_model_batch_size_{}========================='.format(self.config.batch_size))
+        #else :
+        #    with open('{}/ptb_var_62_train_acc_conv_pert.pkl'.format(grad_save_path), 'wb') as f1:
+        #        pickle.dump([W1_grad_var, W2_grad_var, W3_grad_var, W4_grad_var, W5_grad_var, W6_grad_var, W7_grad_var, W8_grad_var, W9_grad_var, W10_grad_var, W11_grad_var, W12_grad_var, W13_grad_var, W_FC_grad_var], f1)
+        #        print('======================save_pert_model_batch_size_{}========================='.format(self.config.batch_size))

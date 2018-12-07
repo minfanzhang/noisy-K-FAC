@@ -90,6 +90,11 @@ class KFACOptimizer(gradient_descent.GradientDescentOptimizer):
                              "variables.")
         return super(KFACOptimizer, self).compute_gradients(*args, **kwargs)
 
+    def compute_precon_gradients(self, *args, **kwargs):
+        grads_and_vars = self.compute_gradients(*args, **kwargs)
+        precon_grads_and_vars = self._fisher_est.multiply_inverse(grads_and_vars)
+        return precon_grads_and_vars
+
     def apply_gradients(self, grads_and_vars, *args, **kwargs):
         grads_and_vars = list(grads_and_vars)
 

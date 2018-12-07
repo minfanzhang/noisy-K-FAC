@@ -19,7 +19,7 @@ class Transpose(object):
         return self.__class__.__name__
 
 
-def load_pytorch(config):
+def load_pytorch(config, batch_size=None):
     if config.dataset == 'cifar10':
         if config.data_aug:
             train_transform = transforms.Compose([
@@ -81,10 +81,19 @@ def load_pytorch(config):
     else:
         raise ValueError("Unsupported dataset!")
 
-    trainloader = torch.utils.data.DataLoader(trainset,
-                                              batch_size=config.batch_size,
-                                              shuffle=True,
-                                              num_workers=config.num_workers)
+    if batch_size:
+        config.batch_size = batch_size
+
+    if config.check_grad:
+        trainloader = torch.utils.data.DataLoader(trainset,
+                                                batch_size=config.batch_size,
+                                                shuffle=False,
+                                                num_workers=config.num_workers)
+    else:
+        trainloader = torch.utils.data.DataLoader(trainset,
+                                                batch_size=config.batch_size,
+                                                shuffle=True,
+                                                num_workers=config.num_workers)
     testloader = torch.utils.data.DataLoader(testset,
                                              batch_size=config.test_batch_size,
                                              shuffle=False,
