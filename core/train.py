@@ -105,7 +105,7 @@ class Trainer(BaseTrain):
             gradient_step = opt.compute_gradients(
                 self.model.total_loss, opt.variables)
 
-        feed_dict = {self.model.is_training: False,
+        feed_dict = {self.model.is_training: True,
                      self.model.inputs: x, self.model.targets: y,
                      self.model.n_particles: self.config.train_particles}
 
