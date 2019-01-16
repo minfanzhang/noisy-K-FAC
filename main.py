@@ -13,7 +13,6 @@ from misc.data_loader import load_pytorch
 from core.model import Model
 from core.train import Trainer
 
-
 _INPUT_DIM = {
     'fmnist': [784],
     'mnist': [784],
@@ -76,7 +75,7 @@ def gradient_check():
 
     logger.info(config)
 
-    batch_sizes = [1,4,16,32,64,128,256,512,1024]
+    batch_sizes = [1,2,4,8,16,32,64,128,256,512,1024,2048]
 
     precon = False
     for bs in batch_sizes:
@@ -117,5 +116,5 @@ def gradient_check():
         tf.reset_default_graph()
 
 if __name__ == "__main__":
-    gradient_check()
-    #main()
+    #gradient_check()
+    main()

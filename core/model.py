@@ -42,7 +42,7 @@ class Model(BaseModel):
         self.sampler = sp.Sampler(self.config, self.n_data, self.n_particles)
         logits, l2_loss = net(inputs, self.sampler, self.is_training,
                               self.config.batch_norm, self.layer_collection,
-                              self.n_particles)
+                              self.n_particles, self.config)
 
         # ensemble
         logits_ = tf.reduce_mean(

@@ -17,7 +17,7 @@ class Trainer(BaseTrain):
         for cur_epoch in range(self.config.epoch):
             self.logger.info('epoch: {}'.format(int(cur_epoch)))
             self.train_epoch()
-            self.test_epoch()
+            #self.test_epoch()
 
     def train_epoch(self):
         loss_list = []
@@ -90,7 +90,9 @@ class Trainer(BaseTrain):
         self.model.load(sess)
 
         x, y = torch.load("cifar10_x")[:batch_size], \
-            torch.load("cifar10_y")[:batch_size]
+             torch.load("cifar10_y")[:batch_size]
+
+        
 
         num_samples = 150
         num_trials = 1
@@ -102,7 +104,7 @@ class Trainer(BaseTrain):
             gradient_step = opt.compute_precon_gradients(
                 self.model.total_loss, opt.variables)
         else:
-            gradient_step = opt.compute_gradients(
+            gradient_step = tf.gradients(
                 self.model.total_loss, opt.variables)
 
         feed_dict = {self.model.is_training: True,

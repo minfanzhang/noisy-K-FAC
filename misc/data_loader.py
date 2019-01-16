@@ -88,12 +88,14 @@ def load_pytorch(config, batch_size=None):
         trainloader = torch.utils.data.DataLoader(trainset,
                                                 batch_size=config.batch_size,
                                                 shuffle=False,
-                                                num_workers=config.num_workers)
+                                                num_workers=config.num_workers,
+                                                drop_last=True)
     else:
         trainloader = torch.utils.data.DataLoader(trainset,
                                                 batch_size=config.batch_size,
                                                 shuffle=True,
-                                                num_workers=config.num_workers)
+                                                num_workers=config.num_workers,
+                                                drop_last=True)
     testloader = torch.utils.data.DataLoader(testset,
                                              batch_size=config.test_batch_size,
                                              shuffle=False,

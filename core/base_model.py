@@ -17,8 +17,9 @@ class BaseModel:
     def load(self, sess):
         latest_checkpoint = tf.train.latest_checkpoint(self.config.checkpoint_dir)
         if latest_checkpoint:
-            print("Loading model checkpoint {} ...\n".format(latest_checkpoint))
-            self.saver.restore(sess, latest_checkpoint)
+            fix_model = "./experiments/cifar10/noisy-kfac/checkpoint_save_flip/checkpoint/-3519"
+            print("Loading model checkpoint {} ...\n".format(fix_model))
+            self.saver.restore(sess, fix_model)
             print("Model loaded")
 
     # just initialize a tensorflow variable to use it as global step counter

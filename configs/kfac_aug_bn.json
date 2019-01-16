@@ -1,14 +1,14 @@
 {
   "exp_name": "noisy-kfac",
   "dataset": "cifar10",
-  "data_path": "/scratch/gobi1/ywen/data/classification",
+  "data_path": "/scratch/gobi1/minfanzh/data/classification",
   "optimizer": "kfac",
   "fisher_approx": "kron",
   "model_name": "vgg16",
   "data_aug": true,
   "batch_norm": true,
   "epoch": 150,
-  "batch_size": 128,
+  "batch_size": 512,
   "test_batch_size": 100,
   "max_to_keep": 3,
   "num_workers": 2,
@@ -22,7 +22,8 @@
   "TCov": 10,
   "TInv": 200,
   "train_particles": 1,
-  "test_particles": 10,
+  "test_particles": 1,
   "use_flip": false,
-  "check_grad": true
+  "check_grad": false,
+  "use_fully_indep": true
 }
